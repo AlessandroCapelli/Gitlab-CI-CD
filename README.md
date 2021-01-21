@@ -1,4 +1,4 @@
-# 
+# Gitlab CI/CD
 ## Alessandro Capelli
 
 Implementazione di un'applicazione web che consiste nella possibilità di inserire, in un database, utenti (rappresentati come <id, email, password>) ed effettuare semplici operazioni sugli stessi. L'applicazione web è stata sviluppata in Python (utilizzando il framework Flask), ispirandosi al paradigma REST, ed implementa un database relazionale PostgreSQL per il salvataggio dei dati. Per quanto riguarda il file YML per l'implementazione della pipeline, è stato scelto l'utilizzo dell'immagine "python", e le fasi scelte sono state le seguenti:
