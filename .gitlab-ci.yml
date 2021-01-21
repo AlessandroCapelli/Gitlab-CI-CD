@@ -1,0 +1,74 @@
+image: python:latest
+    
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+stages:
+    - build
+    - verify
+    - unit-test
+    - integration-test
+    - deploy
+
+build:
+  stage: build
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+  script:
+    - pip install -r requirements.txt
+
+verify:
+  stage: verify
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+  script:
+    - pip install flake8
+    - flake8 app.py
+    - flake8 test_unit.py
+    - flake8 test_integration.py
+
+unit-test:
+  stage: unit-test
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+  script:
+    - python test_unit.py
+
+integration-test:
+  stage: integration-test
+  services:
+    - postgres:latest
+  variables:
+    POSTGRES_DB: mysql
+    POSTGRES_USER: localhost
+    POSTGRES_PASSWORD: ""
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+  script:
+    - export DATABASE_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+    - python test_integration.py
+
+deploy:
+  stage: deploy
+  script:
+    - git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/assignment1-capellibucci.git
+    - git push --force heroku HEAD:master
+    - echo "Deployed to Server https://assignment1-capellibucci.herokuapp.com/"
+  environment:
+    name: app
+    url: https://assignment1-capellibucci.herokuapp.com/
+  only:
+    - master
